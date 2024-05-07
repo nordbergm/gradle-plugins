@@ -21,8 +21,15 @@ package co.elastic.gradle.utils.docker.instruction;
 import org.gradle.api.tasks.Input;
 
 import java.util.List;
+import java.util.Objects;
 
-public record Install(List<String> packages) implements ContainerImageBuildInstruction {
+public final class Install implements ContainerImageBuildInstruction {
+
+    private final List<String> packages;
+
+    public Install(List<String> packages) {
+        this.packages = Objects.requireNonNull(packages);
+    }
 
     @Input
     public List<String> getPackages() {

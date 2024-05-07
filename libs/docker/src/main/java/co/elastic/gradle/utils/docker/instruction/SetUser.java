@@ -20,7 +20,13 @@ package co.elastic.gradle.utils.docker.instruction;
 
 import org.gradle.api.tasks.Input;
 
-public record SetUser(String username) implements ContainerImageBuildInstruction {
+public final class SetUser implements ContainerImageBuildInstruction {
+
+    private final String username;
+
+    public SetUser(String username) {
+        this.username = username;
+    }
 
     @Input
     public String getUsername() {

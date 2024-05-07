@@ -20,9 +20,23 @@ package co.elastic.gradle.utils.docker.instruction;
 
 import org.gradle.api.tasks.Input;
 
-public record ChangingLabel(String key, String value) implements ContainerImageBuildInstruction {
+public final class ChangingLabel implements ContainerImageBuildInstruction {
+
+    private final String key;
+    private final String value;
+
+    public ChangingLabel(String key, String value) {
+        this.key = key;
+        this.value = value;
+    }
+
     @Input
     public String getKey() {
         return key;
+    }
+
+    @Input
+    public String getValue() {
+        return value;
     }
 }

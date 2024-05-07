@@ -23,11 +23,11 @@ import org.gradle.api.tasks.Input;
 import java.io.Serializable;
 import java.util.Objects;
 
-public record UnchangingContainerReference(
-        String repository,
-        String tag,
-        String digest
-) implements Serializable {
+public final class UnchangingContainerReference implements Serializable {
+
+    private final String repository;
+    private final String tag;
+    private final String digest;
 
     public UnchangingContainerReference(String repository, String tag, String digest) {
         this.repository = Objects.requireNonNull(repository);

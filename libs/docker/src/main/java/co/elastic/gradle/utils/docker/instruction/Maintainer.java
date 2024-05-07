@@ -20,7 +20,15 @@ package co.elastic.gradle.utils.docker.instruction;
 
 import org.gradle.api.tasks.Input;
 
-public record Maintainer(String name, String email) implements ContainerImageBuildInstruction {
+public final class Maintainer implements ContainerImageBuildInstruction {
+
+    private final String name;
+    private final String email;
+
+    public Maintainer(String name, String email) {
+        this.name = name;
+        this.email = email;
+    }
 
     @Input
     public String getName() {

@@ -23,11 +23,19 @@ import org.gradle.api.tasks.Input;
 
 import java.io.File;
 
-public record FromLocalArchive(
-        Provider<File> archive,
-        // No need to declare as input as we have the ID, so we can save some time by avoiding fingerprinting large files
-        Provider<String> imageId
-) implements ContainerImageBuildInstruction {
+public final class FromLocalArchive implements ContainerImageBuildInstruction {
+
+    private final Provider<File> archive;
+    private final Provider<String> imageId;
+
+    public FromLocalArchive(
+            Provider<File> archive, // No need to declare as input as we have the ID, so we can save some time by avoiding fingerprinting large files
+            Provider<String> imageId
+    ) {
+
+        this.archive = archive;
+        this.imageId = imageId;
+    }
 
     @Input
     public Provider<String> getImageId() {

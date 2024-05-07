@@ -22,7 +22,14 @@ import org.gradle.api.tasks.Input;
 
 import java.util.List;
 
-public record RepoConfigRun(List<String> commands) implements ContainerImageBuildInstruction {
+public final class RepoConfigRun implements ContainerImageBuildInstruction {
+
+    private final List<String> commands;
+
+    public RepoConfigRun(List<String> commands) {
+        this.commands = commands;
+    }
+
     @Input
     public List<String> getCommands() {
         return commands;

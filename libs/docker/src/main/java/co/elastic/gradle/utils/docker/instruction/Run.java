@@ -22,7 +22,13 @@ import org.gradle.api.tasks.Input;
 
 import java.util.List;
 
-public record Run(List<String> commands) implements ContainerImageBuildInstruction {
+public final class Run implements ContainerImageBuildInstruction {
+
+    private final List<String> commands;
+
+    public Run(List<String> commands) {
+        this.commands = commands;
+    }
 
     @Input
     public List<String> getCommands() {

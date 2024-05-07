@@ -22,10 +22,20 @@ import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
 
-public record FromLocalImageBuild(String otherProjectPath,
-                                  Provider<String> tag,
-                                  Provider<String> imageId)
-        implements FromImageReference {
+public final class FromLocalImageBuild implements FromImageReference {
+
+    private final String otherProjectPath;
+    private final Provider<String> tag;
+    private final Provider<String> imageId;
+
+    public FromLocalImageBuild(String otherProjectPath,
+                               Provider<String> tag,
+                               Provider<String> imageId) {
+
+        this.otherProjectPath = otherProjectPath;
+        this.tag = tag;
+        this.imageId = imageId;
+    }
 
     @Input
     public Provider<String> getImageId() {
@@ -36,5 +46,10 @@ public record FromLocalImageBuild(String otherProjectPath,
     @Internal
     public Provider<String> getReference() {
         return tag;
+    }
+
+    @Internal
+    public String getOtherProjectPath() {
+        return otherProjectPath;
     }
 }

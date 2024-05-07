@@ -20,7 +20,13 @@ package co.elastic.gradle.utils.docker.instruction;
 
 import org.gradle.api.tasks.Input;
 
-public record Workdir(String folder) implements ContainerImageBuildInstruction {
+public final class Workdir implements ContainerImageBuildInstruction {
+
+    private final String folder;
+
+    public Workdir(String folder) {
+        this.folder = folder;
+    }
 
     @Input
     public String getFolder() {
