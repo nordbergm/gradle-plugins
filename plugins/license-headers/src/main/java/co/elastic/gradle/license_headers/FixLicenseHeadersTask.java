@@ -50,8 +50,8 @@ public abstract class FixLicenseHeadersTask extends DefaultTask {
                     projectDir, expectedHeader, files
             );
             for (Map.Entry<Path, ViolationReason> entry : brokenPaths.entrySet()) {
-                if (entry.getValue().type().equals(ViolationReason.Type.LINE_MISS_MATCH)) {
-                    getLogger().warn("Can't automatically fix `{}` : {}", projectDir.relativize(entry.getKey()), entry.getValue().reason());
+                if (entry.getValue().getType().equals(ViolationReason.Type.LINE_MISS_MATCH)) {
+                    getLogger().warn("Can't automatically fix `{}` : {}", projectDir.relativize(entry.getKey()), entry.getValue().getReason());
                 } else {
                     Files.write(
                             entry.getKey(),

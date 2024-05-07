@@ -34,12 +34,18 @@ import java.io.Serializable;
 import java.io.Writer;
 import java.util.Map;
 
-public record BaseLockfile(
-        @NotNull  Map<Architecture, Packages> packages,
-        @Nullable  Map<Architecture, UnchangingContainerReference> image
-) implements Serializable {
-    @JsonCreator
-    public BaseLockfile {
+public final class BaseLockfile implements Serializable {
+    private final Map<Architecture, Packages> packages;
+    @Nullable
+    private final Map<Architecture, UnchangingContainerReference> image;
+
+    public BaseLockfile(
+            @NotNull Map<Architecture, Packages> packages,
+            @Nullable Map<Architecture, UnchangingContainerReference> image
+    ) {
+
+        this.packages = packages;
+        this.image = image;
     }
 
     @Nested

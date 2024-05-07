@@ -135,7 +135,8 @@ public abstract class DockerBaseImageBuildTask extends DefaultTask implements Im
         return Stream.concat(
                 instructions.stream()
                         .map(instruction -> {
-                            if (instruction instanceof From from) {
+                            if (instruction instanceof From) {
+                                From from = (From) instruction;
                                 if (lockfile.getImage() == null) {
                                     throw new GradleException("Missing image in lockfile, does it need to be regenerated?");
                                 }
@@ -162,10 +163,11 @@ public abstract class DockerBaseImageBuildTask extends DefaultTask implements Im
                                                 lockedImage.getDigest()
                                         ))
                                 );
-                            } else if (instruction instanceof Install install) {
+                            } else if (instruction instanceof Install) {
+                                Install install = (Install) instruction;
                                 final List<String> missingPackages = install.getPackages().stream()
                                         .filter(each -> packages.findByName(each).isEmpty())
-                                        .toList();
+                                        .collect(Collectors.toList());
                                 if (!missingPackages.isEmpty()) {
                                     throw new GradleException(
                                             "Does the lockfile need to be regenerated? The following packages are missing from the lockfile:\n" +
@@ -176,9 +178,9 @@ public abstract class DockerBaseImageBuildTask extends DefaultTask implements Im
                                 return new Install(
                                         install.getPackages().stream()
                                                 .map(packages::findByName)
-                                                .map(Optional::get)
+                                                .flatMap(Optional::stream)
                                                 .map(each -> each.getPackageName(distribution))
-                                                .toList()
+                                                .collect(Collectors.toList())
                                 );
                             } else {
                                 return instruction;
@@ -192,10 +194,10 @@ public abstract class DockerBaseImageBuildTask extends DefaultTask implements Im
                                 packages.getPackages().stream()
                                         .filter(each -> !allPackages.contains(each.getName()))
                                         .map(each -> each.getPackageName(getOSDistribution().get()))
-                                        .toList()
+                                        .collect(Collectors.toList())
                         )
                 )
-        ).toList();
+        ).collect(Collectors.toList());
     }
 
 

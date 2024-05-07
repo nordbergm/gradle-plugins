@@ -41,7 +41,7 @@ public abstract class ComponentPullTask extends DefaultTask {
         final Path lockfileLocation = RegularFileUtils.toPath(getLockfileLocation());
         final ComponentLockfile lockFile = ComponentLockfile.parse(Files.newBufferedReader(lockfileLocation));
         final JibActions actions = new JibActions();
-        lockFile.images().values().forEach(ref -> {
+        lockFile.getImages().values().forEach(ref -> {
             final String format = String.format("%s:%s@%s", ref.getRepository(), ref.getTag(), ref.getDigest());
             getLogger().lifecycle("Pulling base layers for {} into the jib cache", format);
             actions.pullImage(format);

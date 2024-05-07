@@ -35,9 +35,11 @@ public class VaultPlugin implements Plugin<PluginAware> {
     @Override
     public void apply(@Nonnull PluginAware target) {
         final File rootDir;
-        if (target instanceof Settings settings) {
+        if (target instanceof Settings) {
+            Settings settings = (Settings) target;
             rootDir = settings.getRootDir();
-        } else if (target instanceof Project project) {
+        } else if (target instanceof Project) {
+            Project project = (Project) target;
             rootDir = project.getRootDir();
         } else {
             throw new GradleException("Can't apply plugin to " + target.getClass());

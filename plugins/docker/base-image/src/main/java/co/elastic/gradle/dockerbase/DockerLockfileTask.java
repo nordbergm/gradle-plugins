@@ -60,6 +60,7 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class DockerLockfileTask extends DefaultTask implements ImageBuildable, JFrogCliUsingTask {
@@ -136,10 +137,23 @@ public abstract class DockerLockfileTask extends DefaultTask implements ImageBui
     @Nested
     public List<ContainerImageBuildInstruction> getActualInstructions() {
         // Use the last available digest for this image
+        String upgradeCommand;
+        switch (getOSDistribution().get()) {
+            case UBUNTU:
+            case DEBIAN:
+                upgradeCommand = "apt-get -y --allow-unauthenticated upgrade";
+                break;
+            case CENTOS:
+                upgradeCommand = "yum -y upgrade";
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
         return Stream.concat(
                         getInputInstructions().get().stream()
                                 .map(instruction -> {
-                                    if (instruction instanceof From from) {
+                                    if (instruction instanceof From) {
+                                        From from = (From) instruction;
                                         if (from.getReference().get().contains("@")) {
                                             throw new IllegalStateException("Input instruction can't have a digest");
                                         }
@@ -161,14 +175,11 @@ public abstract class DockerLockfileTask extends DefaultTask implements ImageBui
                                 new SetUser("root"),
                                 DockerDaemonActions.wrapInstallCommand(
                                         this,
-                                        switch (getOSDistribution().get()) {
-                                            case UBUNTU, DEBIAN -> "apt-get -y --allow-unauthenticated upgrade";
-                                            case CENTOS -> "yum -y upgrade";
-                                        }
+                                        upgradeCommand
                                 )
                         )
                 )
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Input
@@ -265,7 +276,7 @@ public abstract class DockerLockfileTask extends DefaultTask implements ImageBui
                                             record.get(2),
                                             record.get(3)
                                     ))
-                                    .toList()
+                                    .collect(Collectors.toList())
                             )
                     )
             );

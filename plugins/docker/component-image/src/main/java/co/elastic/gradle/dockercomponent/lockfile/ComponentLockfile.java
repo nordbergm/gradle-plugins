@@ -30,11 +30,17 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.Map;
 
-public record ComponentLockfile(Map<Architecture, UnchangingContainerReference> images) {
+public final class ComponentLockfile {
+
+    private final Map<Architecture, UnchangingContainerReference> images;
+
+    public ComponentLockfile(Map<Architecture, UnchangingContainerReference> images) {
+        this.images = images;
+    }
 
     @Input
     public Map<Architecture, UnchangingContainerReference> getImages() {
-        return images();
+        return images;
     }
 
     public static ComponentLockfile parse(Reader reader) throws IOException {

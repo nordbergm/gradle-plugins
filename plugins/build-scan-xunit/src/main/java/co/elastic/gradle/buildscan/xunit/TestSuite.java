@@ -23,15 +23,33 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public record TestSuite (
-        String name,
-        Integer errors,
-        Integer failures,
-        Integer skipped,
-        LocalDateTime timestamp,
-        Double time,
-        List<TestCase> tests
-) {
+public final class TestSuite {
+    private final String name;
+    private final Integer errors;
+    private final Integer failures;
+    private final Integer skipped;
+    private final LocalDateTime timestamp;
+    private final Double time;
+    private final List<TestCase> tests;
+
+    public TestSuite(
+            String name,
+            Integer errors,
+            Integer failures,
+            Integer skipped,
+            LocalDateTime timestamp,
+            Double time,
+            List<TestCase> tests
+    ) {
+        this.name = name;
+        this.errors = errors;
+        this.failures = failures;
+        this.skipped = skipped;
+        this.timestamp = timestamp;
+        this.time = time;
+        this.tests = tests;
+    }
+
     public LocalDateTime startedTime(Supplier<LocalDateTime> defaultStartTime) {
         return Optional.ofNullable(timestamp).orElseGet(defaultStartTime);
     }
@@ -40,5 +58,25 @@ public record TestSuite (
         Double convertedTime = Optional.of(this.time).orElse(0.0) * 1000 * 1000;
         return startedTime(defaultStartTime)
                 .plusSeconds(convertedTime.longValue());
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Integer getErrors() {
+        return errors;
+    }
+
+    public Integer getFailures() {
+        return failures;
+    }
+
+    public Integer getSkipped() {
+        return skipped;
+    }
+
+    public List<TestCase> getTests() {
+        return tests;
     }
 }

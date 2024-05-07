@@ -24,7 +24,16 @@ import org.gradle.api.tasks.Input;
 import java.io.Serializable;
 import java.net.URL;
 
-public record OsPackageRepository(String name, Provider<URL> url) implements Serializable {
+public final class OsPackageRepository implements Serializable {
+    private final String name;
+    private final Provider<URL> url;
+
+    public OsPackageRepository(String name, Provider<URL> url) {
+
+        this.name = name;
+        this.url = url;
+    }
+
     @Input
     public String getName() {
         return name;

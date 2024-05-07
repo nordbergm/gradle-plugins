@@ -62,26 +62,27 @@ public class ExternalTestExecuter implements TestExecuter<TestExecutionSpec> {
                 .peek(file -> logger.lifecycle("Loading results from {}", file))
                 .flatMap(resultFile -> XUnitXmlParser.parse(resultFile).stream())
                 .forEach(testSuite -> {
-                    DefaultTestClassDescriptor suiteDescriptor = new DefaultTestClassDescriptor(idGenerator.generateId(), testSuite.name());
+                    DefaultTestClassDescriptor suiteDescriptor = new DefaultTestClassDescriptor(idGenerator.generateId(), testSuite.getName());
                     LocalDateTime suiteStartTime = testSuite.startedTime(LocalDateTime::now);
                     processor.started(suiteDescriptor, new TestStartEvent(toEpochMilli(suiteStartTime)));
 
-                    testSuite.tests().forEach(testCase -> {
+                    testSuite.getTests().forEach(testCase -> {
 
                         DefaultTestMethodDescriptor methodDescriptor = new DefaultTestMethodDescriptor(
                                 idGenerator.generateId(),
-                                testSuite.name(),
-                                testCase.name());
+                                testSuite.getName(),
+                                testCase.getName());
 
                         processor.started(methodDescriptor, new TestStartEvent(toEpochMilli(suiteStartTime), suiteDescriptor.getId()));
 
                         // Cannot switch on types ...
-                        if (testCase.status() instanceof TestCaseSuccess success) {
-                            Optional.of(success.stdout()).ifPresent(stdout -> processor.output(
+                        if (testCase.getStatus() instanceof TestCaseSuccess) {
+                            TestCaseSuccess success = (TestCaseSuccess) testCase.getStatus();
+                            Optional.of(success.getStdout()).ifPresent(stdout -> processor.output(
                                     methodDescriptor.getId(),
                                     new DefaultTestOutputEvent(TestOutputEvent.Destination.StdOut, stdout)
                             ));
-                            Optional.of(success.stderr()).ifPresent(stderr -> processor.output(
+                            Optional.of(success.getStderr()).ifPresent(stderr -> processor.output(
                                     methodDescriptor.getId(),
                                     new DefaultTestOutputEvent(TestOutputEvent.Destination.StdErr, stderr)
                             ));
@@ -92,30 +93,33 @@ public class ExternalTestExecuter implements TestExecuter<TestExecutionSpec> {
                                             TestResult.ResultType.SUCCESS
                                     )
                             );
-                        } else if (testCase.status() instanceof TestCaseFailure failure) {
+                        } else if (testCase.getStatus() instanceof TestCaseFailure) {
+                            TestCaseFailure failure = (TestCaseFailure) testCase.getStatus();
                             processor.failure(
                                     methodDescriptor.getId(),
                                     org.gradle.api.tasks.testing.TestFailure.fromTestFrameworkFailure(
                                         new ExternalTestFailureException(
-                                                "Test case being imported failed (" + Optional.ofNullable(failure.type()).orElse("Untyped") + "): " +
-                                                Optional.ofNullable(failure.message()).orElse("") + " " +
-                                                Optional.ofNullable(failure.description()).orElse("")
+                                                "Test case being imported failed (" + Optional.ofNullable(failure.getType()).orElse("Untyped") + "): " +
+                                                Optional.ofNullable(failure.getMessage()).orElse("") + " " +
+                                                Optional.ofNullable(failure.getDescription()).orElse("")
                                         )
                                     )
                             );
-                        } else if (testCase.status() instanceof TestCaseError error) {
+                        } else if (testCase.getStatus() instanceof TestCaseError) {
+                            TestCaseError error = (TestCaseError) testCase.getStatus();
                             processor.failure(
                                     methodDescriptor.getId(),
                                     org.gradle.api.tasks.testing.TestFailure.fromTestFrameworkFailure(
                                         new ExternalTestFailureException(
-                                                "Test case being imported failed (" + Optional.ofNullable(error.type()).orElse("Untyped") + "): " +
-                                                Optional.ofNullable(error.message()).orElse("") +
-                                                Optional.ofNullable(error.description()).map(desc -> "\n" + desc).orElse("")
+                                                "Test case being imported failed (" + Optional.ofNullable(error.getType()).orElse("Untyped") + "): " +
+                                                Optional.ofNullable(error.getMessage()).orElse("") +
+                                                Optional.ofNullable(error.getDescription()).map(desc -> "\n" + desc).orElse("")
                                         )
                                     )
                             );
-                        } else if (testCase.status() instanceof TestCaseSkipped skipped) {
-                            Optional.ofNullable(skipped.message()).ifPresent(message -> processor.output(
+                        } else if (testCase.getStatus() instanceof TestCaseSkipped) {
+                            TestCaseSkipped skipped = (TestCaseSkipped) testCase.getStatus();
+                            Optional.ofNullable(skipped.getMessage()).ifPresent(message -> processor.output(
                                     methodDescriptor.getId(),
                                     new DefaultTestOutputEvent(TestOutputEvent.Destination.StdOut, message)
                             ));

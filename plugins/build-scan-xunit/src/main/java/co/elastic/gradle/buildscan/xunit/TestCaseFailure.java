@@ -18,9 +18,30 @@
  */
 package co.elastic.gradle.buildscan.xunit;
 
-public record TestCaseFailure(
-        String message,
-        String type,
-        String description
-) implements TestCaseStatus {
+public final class TestCaseFailure implements TestCaseStatus {
+    private final String message;
+    private final String type;
+    private final String description;
+
+    public TestCaseFailure(
+            String message,
+            String type,
+            String description
+    ) {
+        this.message = message;
+        this.type = type;
+        this.description = description;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getDescription() {
+        return description;
+    }
 }

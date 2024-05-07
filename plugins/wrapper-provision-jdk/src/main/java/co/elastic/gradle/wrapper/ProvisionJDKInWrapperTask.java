@@ -136,7 +136,7 @@ abstract public class ProvisionJDKInWrapperTask extends DefaultTask {
             throw new IllegalStateException("Can't find /gradlew-bootstrap-jdk.sh in resources");
         }
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
-            return String.join("\n", reader.lines().toList());
+            return String.join("\n", reader.lines().collect(Collectors.toList()));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

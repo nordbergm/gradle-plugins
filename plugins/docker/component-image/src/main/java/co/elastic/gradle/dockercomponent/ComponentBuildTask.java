@@ -205,10 +205,11 @@ abstract public class ComponentBuildTask extends DefaultTask {
                     getCreatedAtFile().get().get(architecture),
                     entry.getValue().stream()
                             .map(instruction -> {
-                                if (instruction instanceof From from) {
+                                if (instruction instanceof From) {
+                                    From from = (From) instruction;
                                     if (lockFile != null) {
                                         return actions.addDigestFromLockfile(
-                                                lockFile.images().get(entry.getKey()), from, getProviderFactory()
+                                                lockFile.getImages().get(entry.getKey()), from, getProviderFactory()
                                         );
                                     } else {
                                         return instruction;
@@ -217,7 +218,7 @@ abstract public class ComponentBuildTask extends DefaultTask {
                                     return instruction;
                                 }
                             })
-                            .toList()
+                            .collect(Collectors.toList())
             );
         }
 

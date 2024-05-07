@@ -128,7 +128,7 @@ public class JibActions {
         final JibContainerBuilder jibBuilder;
         if (fromLocalImageBuild.isPresent()) {
             jibBuilder = Jib.from(
-                    TarImage.at(fromLocalImageBuild.get().archive().get().toPath())
+                    TarImage.at(fromLocalImageBuild.get().getArchive().get().toPath())
             );
         } else {
             final Optional<From> from = instructions.stream()
@@ -349,22 +349,33 @@ public class JibActions {
             } catch (IOException e) {
                 throw new UncheckedIOException("Error configuring " + copyInstruction.getLayer() + " for Jib docker config", e);
             }
-        } else if (instruction instanceof Entrypoint entrypoint) {
+        } else if (instruction instanceof Entrypoint) {
+            Entrypoint entrypoint = (Entrypoint) instruction;
             jibBuilder.setEntrypoint(entrypoint.getValue());
-        } else if (instruction instanceof Cmd cmd) {
+        } else if (instruction instanceof Cmd) {
+            Cmd cmd = (Cmd) instruction;
             jibBuilder.setProgramArguments(cmd.getValue());
-        } else if (instruction instanceof Env envInstruction) {
+        } else if (instruction instanceof Env) {
+            Env envInstruction = (Env) instruction;
             jibBuilder.addEnvironmentVariable(envInstruction.getKey(), envInstruction.getValue());
-        } else if (instruction instanceof Expose expose) {
+        } else if (instruction instanceof Expose) {
+            Expose expose = (Expose) instruction;
             switch (expose.getType()) {
-                case TCP -> jibBuilder.addExposedPort(Port.tcp(expose.getPort()));
-                case UDP -> jibBuilder.addExposedPort(Port.udp(expose.getPort()));
+                case TCP:
+                    jibBuilder.addExposedPort(Port.tcp(expose.getPort()));
+                    break;
+                case UDP:
+                    jibBuilder.addExposedPort(Port.udp(expose.getPort()));
+                    break;
             }
-        } else if (instruction instanceof Label label) {
+        } else if (instruction instanceof Label) {
+            Label label = (Label) instruction;
             jibBuilder.addLabel(label.getKey(), label.getValue());
-        } else if (instruction instanceof ChangingLabel changingLabel) {
-            jibBuilder.addLabel(changingLabel.getKey(), changingLabel.value());
-        } else if (instruction instanceof Maintainer maintainer) {
+        } else if (instruction instanceof ChangingLabel) {
+            ChangingLabel changingLabel = (ChangingLabel) instruction;
+            jibBuilder.addLabel(changingLabel.getKey(), changingLabel.getValue());
+        } else if (instruction instanceof Maintainer) {
+            Maintainer maintainer = (Maintainer) instruction;
             jibBuilder.addLabel("maintainer", maintainer.getName() + "<" + maintainer.getEmail() + ">");
         } else if (instruction instanceof Workdir) {
             jibBuilder.setWorkingDirectory(AbsoluteUnixPath.get(((Workdir) instruction).getFolder()));

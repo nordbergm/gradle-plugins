@@ -18,10 +18,30 @@
  */
 package co.elastic.gradle.buildscan.xunit;
 
-public record TestCaseError(
+public final class TestCaseError implements TestCaseStatus {
+    private final String message;
+    private final String type;
+    private final String description;
+
+    public TestCaseError(
         String message,
         String type,
         String description
-) implements TestCaseStatus {
+    ) {
+        this.message = message;
+        this.type = type;
+        this.description = description;
+    }
 
+    public String getMessage() {
+        return message;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getDescription() {
+        return description;
+    }
 }

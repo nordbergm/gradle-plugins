@@ -24,15 +24,24 @@ import org.gradle.api.tasks.Input;
 
 import java.io.Serializable;
 
-public record UnchangingPackage(
-        String name,
-        String version,
-        String release,
-        String architecture
-) implements Serializable {
+public final class UnchangingPackage implements Serializable {
 
-    @JsonCreator
-    public UnchangingPackage {
+    private final String name;
+    private final String version;
+    private final String release;
+    private final String architecture;
+
+    public UnchangingPackage(
+            String name,
+            String version,
+            String release,
+            String architecture
+    ) {
+
+        this.name = name;
+        this.version = version;
+        this.release = release;
+        this.architecture = architecture;
     }
 
     @Input
@@ -56,14 +65,19 @@ public record UnchangingPackage(
     }
 
     public String getPackageName(OSDistribution distribution) {
-        return switch (distribution) {
-            case CENTOS -> String.format("%s-%s-%s.%s", name, version, release, architecture);
-            case UBUNTU, DEBIAN -> String.format(
-                    "%s=%s%s",
-                    name,
-                    version,
-                    release !=null && !release.equals("") ? "-" + release : ""
-            );
-        };
+        switch (distribution) {
+            case CENTOS:
+                return String.format("%s-%s-%s.%s", name, version, release, architecture);
+            case UBUNTU:
+            case DEBIAN:
+                return String.format(
+                        "%s=%s%s",
+                        name,
+                        version,
+                        release == null || release.isEmpty() ? "" : "-" + release
+                );
+            default:
+                throw new IllegalArgumentException();
+        }
     }
 }

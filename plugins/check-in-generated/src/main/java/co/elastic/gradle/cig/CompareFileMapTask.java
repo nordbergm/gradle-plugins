@@ -81,7 +81,7 @@ public abstract class CompareFileMapTask extends AbstractFileMapTask {
         try (final Stream<Map.Entry<File, File>> stream = map.entrySet().stream()) {
             final List<Path> nonEqualFiles = stream
                     .flatMap(entry -> nonEqualFiles(entry.getKey().toPath(), entry.getValue().toPath()))
-                    .toList();
+                    .collect(Collectors.toList());
 
             if (!nonEqualFiles.isEmpty()) {
                 Path projectDir = getProject().getProjectDir().toPath();

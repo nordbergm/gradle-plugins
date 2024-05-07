@@ -55,6 +55,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 public class ElasticConventionsPlugin implements Plugin<PluginAware> {
@@ -63,9 +64,11 @@ public class ElasticConventionsPlugin implements Plugin<PluginAware> {
 
     @Override
     public void apply(PluginAware target) {
-        if (target instanceof Project project) {
+        if (target instanceof Project) {
+            Project project = (Project) target;
             applyToProject(project);
-        } else if (target instanceof Settings settings) {
+        } else if (target instanceof Settings) {
+            Settings settings = (Settings) target;
             applyToSettings(settings);
         }
     }
@@ -147,7 +150,7 @@ public class ElasticConventionsPlugin implements Plugin<PluginAware> {
         // Don't publish in the background on CI since we use ephemeral workers
         buildScan.setUploadInBackground(!isCI);
         buildScan.setServer("https://gradle-enterprise.elastic.co");
-        obfuscation.ipAddresses(ip -> ip.stream().map(it -> "0.0.0.0").toList());
+        obfuscation.ipAddresses(ip -> ip.stream().map(it -> "0.0.0.0").collect(Collectors.toList()));
 
         final Jvm jvm = Jvm.current();
         buildScan.value("Gradle Daemon Java Home", jvm.getJavaHome().getAbsolutePath());

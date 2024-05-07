@@ -18,12 +18,27 @@
  */
 package co.elastic.gradle.license_headers;
 
-public record ViolationReason(String reason, Type type) {
+public final class ViolationReason {
+
+    private final String reason;
+    private final Type type;
+
+    public ViolationReason(String reason, Type type) {
+        this.reason = reason;
+        this.type = type;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public Type getType() {
+        return type;
+    }
 
     public enum Type {
         SHORT_FILE,
         LINE_MISS_MATCH,
         MISSING_HEADER;
-
     }
 }

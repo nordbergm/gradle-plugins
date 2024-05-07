@@ -21,14 +21,38 @@ package co.elastic.gradle.buildscan.xunit;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-public record TestCase(
-        String name,
-        String className,
-        Double time,
-        TestCaseStatus status
-) {
+public final class TestCase {
+    private final String name;
+    private final String className;
+    private final Double time;
+    private final TestCaseStatus status;
+
+    public TestCase(
+            String name,
+            String className,
+            Double time,
+            TestCaseStatus status) {
+
+        this.name = name;
+        this.className = className;
+        this.time = time;
+        this.status = status;
+    }
+
     public LocalDateTime endTime(LocalDateTime suiteStartTime) {
         return suiteStartTime
                 .plusSeconds(Optional.of(time).orElse(0.0).longValue() * 1000 * 1000);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public TestCaseStatus getStatus() {
+        return status;
     }
 }

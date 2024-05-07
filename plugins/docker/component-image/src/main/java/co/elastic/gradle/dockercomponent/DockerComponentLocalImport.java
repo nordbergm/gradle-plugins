@@ -125,7 +125,8 @@ abstract public class DockerComponentLocalImport extends DefaultTask implements 
                         .stream()
                         .filter(jibInstruction -> !(jibInstruction instanceof ChangingLabel))
                         .map(instruction -> {
-                            if (isStaticFrom() && instruction instanceof From from) {
+                            if (isStaticFrom() && instruction instanceof From) {
+                                From from = (From) instruction;
                                 final Path lockfilePath = RegularFileUtils.toPath(getLockFileLocation());
                                 if (!Files.exists(lockfilePath)) {
                                     throw new GradleException("A lockfile does not exist, run the `" +
@@ -141,7 +142,7 @@ abstract public class DockerComponentLocalImport extends DefaultTask implements 
                                     throw new UncheckedIOException(e);
                                 }
                                 return actions.addDigestFromLockfile(
-                                        lockFile.images().get(Architecture.current()), from, getProviderFactory()
+                                        lockFile.getImages().get(Architecture.current()), from, getProviderFactory()
                                 );
                             } else {
                                 return instruction;

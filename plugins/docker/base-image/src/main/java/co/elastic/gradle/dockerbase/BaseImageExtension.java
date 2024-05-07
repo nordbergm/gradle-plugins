@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public abstract class BaseImageExtension implements ExtensionAware {
 
@@ -54,7 +55,7 @@ public abstract class BaseImageExtension implements ExtensionAware {
         );
 
         getPlatforms().convention(
-                Set.copyOf(Arrays.stream(Architecture.values()).toList())
+                Set.copyOf(Arrays.stream(Architecture.values()).collect(Collectors.toList()))
         );
 
         getDockerEphemeralMount().convention("/mnt/ephemeral");

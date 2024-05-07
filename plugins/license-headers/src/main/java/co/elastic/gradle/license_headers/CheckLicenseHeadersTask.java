@@ -71,7 +71,7 @@ public abstract class CheckLicenseHeadersTask extends DefaultTask {
             if (!brokenFiles.isEmpty()) {
                 throw new GradleException("Incorrect header:\n" +
                                           brokenFiles.entrySet().stream()
-                                                  .map(entry -> projectDir.relativize(entry.getKey()) + " : " + entry.getValue().reason())
+                                                  .map(entry -> projectDir.relativize(entry.getKey()) + " : " + entry.getValue().getReason())
                                                   .collect(Collectors.joining("\n"))
                 );
             }

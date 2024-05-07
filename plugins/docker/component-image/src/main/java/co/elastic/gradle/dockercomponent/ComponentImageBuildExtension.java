@@ -52,7 +52,7 @@ public abstract  class ComponentImageBuildExtension implements ExtensionAware {
                                                              return dsl.getInstructions().stream();
                                                          }
                                                  )
-                                                 .toList()
+                                                 .collect(Collectors.toList())
                                  ))
                 )
         );

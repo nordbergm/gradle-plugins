@@ -18,5 +18,20 @@
  */
 package co.elastic.gradle.buildscan.xunit;
 
-public record TestCaseSuccess(String stdout, String stderr) implements TestCaseStatus {
+public final class TestCaseSuccess implements TestCaseStatus {
+    private final String stdout;
+    private final String stderr;
+
+    public TestCaseSuccess(String stdout, String stderr) {
+        this.stdout = stdout;
+        this.stderr = stderr;
+    }
+
+    public String getStdout() {
+        return stdout;
+    }
+
+    public String getStderr() {
+        return stderr;
+    }
 }

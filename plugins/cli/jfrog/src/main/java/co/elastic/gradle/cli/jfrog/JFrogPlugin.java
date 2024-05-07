@@ -101,10 +101,14 @@ public abstract class JFrogPlugin implements Plugin<Project> {
                 // No arm mac binaries as of this writing
                 return "mac-386";
             case LINUX: {
-                return switch (arch) {
-                    case AARCH64 -> "linux-arm64";
-                    case X86_64 -> "linux-amd64";
-                };
+                switch (arch) {
+                    case AARCH64:
+                        return "linux-arm64";
+                    case X86_64:
+                        return "linux-amd64";
+                    default:
+                        throw new IllegalArgumentException();
+                }
             }
             default:
                 throw new GradleException("Unsupported OS: " + os);

@@ -18,5 +18,14 @@
  */
 package co.elastic.gradle.buildscan.xunit;
 
-public record TestCaseSkipped(String message) implements TestCaseStatus {
+public final class TestCaseSkipped implements TestCaseStatus {
+    private final String message;
+
+    public TestCaseSkipped(String message) {
+        this.message = message;
+    }
+
+    public String getMessage() {
+        return message;
+    }
 }

@@ -29,12 +29,16 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public record Packages(
-        List<UnchangingPackage> packages
-) implements Serializable {
+public final class Packages implements Serializable {
+
+    private List<UnchangingPackage> packages = List.of();
+
+    public Packages(List<UnchangingPackage> packages) {
+        this.packages = packages;
+    }
 
     @JsonCreator
-    public Packages {
+    public Packages() {
         if (packages.size() != getUniquePackagesWithMaxVersion(packages).size()) {
             throw new IllegalStateException("Multiple packages have the same name");
         }
@@ -44,16 +48,16 @@ public record Packages(
         final Set<String> nameSet = packages.stream().map(UnchangingPackage::getName)
                 .collect(Collectors.toSet());
         return nameSet.stream()
-                .map(name -> packages.stream().filter(pkg -> pkg.name().equals(name)).toList())
+                .map(name -> packages.stream().filter(pkg -> pkg.getName().equals(name)).collect(Collectors.toList()))
                 .map(list -> list.stream()
                         .max(Comparator.comparing(a -> VersionNumber.parse(a.getVersion())))
                         .orElseThrow(IllegalStateException::new))
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Nested
     public List<UnchangingPackage> getPackages() {
-        return packages();
+        return packages;
     }
 
     public Optional<UnchangingPackage> findByName(String name) {

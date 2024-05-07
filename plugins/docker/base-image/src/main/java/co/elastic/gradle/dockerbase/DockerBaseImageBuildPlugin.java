@@ -163,7 +163,7 @@ public abstract class DockerBaseImageBuildPlugin implements Plugin<Project> {
             extension.getInstructions().stream()
                     .filter(each -> each instanceof FromLocalImageBuild)
                     .map(each -> (FromLocalImageBuild) each)
-                    .map(FromLocalImageBuild::otherProjectPath)
+                    .map(FromLocalImageBuild::getOtherProjectPath)
                     .forEach(projectPath -> {
                         dockerBaseImageBuild.configure(task ->
                                 task.dependsOn(projectPath + ":" + LOCAL_IMPORT_TASK_NAME)
@@ -227,22 +227,40 @@ public abstract class DockerBaseImageBuildPlugin implements Plugin<Project> {
                                     {
                                         final String type = extension.getOSDistribution().get()
                                                 .name().toLowerCase(Locale.ROOT);
+                                        String version;
+                                        switch (extension.getOSDistribution().get()) {
+                                            case DEBIAN:
+                                            case UBUNTU:
+                                                version = pkg.getVersion().replace(":", ".") +
+                                                        "-" + pkg.getArchitecture();
+                                                break;
+                                            case CENTOS:
+                                                version = pkg.getVersion() + "-" +
+                                                        pkg.getRelease() + "." +
+                                                        pkg.getArchitecture();
+                                                break;
+                                            default:
+                                                throw new IllegalArgumentException();
+                                        }
+                                        String ext;
+                                        switch (extension.getOSDistribution().get()) {
+                                            case DEBIAN:
+                                            case UBUNTU:
+                                                ext = pkg.getName().startsWith("__META__") ? "gz" : "deb";
+                                                break;
+                                            case CENTOS:
+                                                ext = pkg.getName().startsWith("__META__") ? "tar" : "rpm";
+                                                break;
+                                            default:
+                                                throw new IllegalArgumentException();
+                                        }
                                         final Map<String, String> dependencyNotation = Map.of(
                                                 "group", type,
-                                                "name", pkg.name(),
+                                                "name", pkg.getName(),
                                                 // Gradle has trouble dealing with : in the version, so we rename the
                                                 // packages to have . instead and use the same here
-                                                "version", switch (extension.getOSDistribution().get()) {
-                                                    case DEBIAN, UBUNTU -> pkg.version().replace(":", ".") +
-                                                                           "-" + pkg.architecture();
-                                                    case CENTOS -> pkg.version() + "-" +
-                                                                   pkg.release() + "." +
-                                                                   pkg.architecture();
-                                                },
-                                                "ext", switch (extension.getOSDistribution().get()) {
-                                                    case DEBIAN, UBUNTU -> pkg.name().startsWith("__META__") ? "gz" : "deb";
-                                                    case CENTOS -> pkg.name().startsWith("__META__") ? "tar" : "rpm";
-                                                }
+                                                "version", version,
+                                                "ext", ext
                                         );
                                         target.getDependencies().add(
                                                 osPackageConfiguration.getName(),
@@ -345,9 +363,9 @@ public abstract class DockerBaseImageBuildPlugin implements Plugin<Project> {
                                     .filter(each -> each instanceof From)
                                     .map(each -> ((From) each))
                                     .map(from -> extension.getLockFile().map(lockfile -> {
-                                        if (lockfile.image() != null &&
+                                        if (lockfile.getImage() != null &&
                                             lockfile.getImage().get(Architecture.current()) != null) {
-                                            final UnchangingContainerReference ref = lockfile.image().get(Architecture.current());
+                                            final UnchangingContainerReference ref = lockfile.getImage().get(Architecture.current());
                                             return new From(getProviderFactory().provider(() -> String.format("%s:%s@%s",
                                                     ref.getRepository(), ref.getTag(), ref.getDigest()
                                             )));

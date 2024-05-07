@@ -42,4 +42,7 @@ public final class FromLocalArchive implements ContainerImageBuildInstruction {
         return imageId;
     }
 
+    public Provider<File> getArchive() {
+        return archive;
+    }
 }

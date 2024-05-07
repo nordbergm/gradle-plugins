@@ -32,6 +32,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @CacheableTask
@@ -142,17 +143,17 @@ abstract public class SandboxExecTask extends SandboxExecBaseTask {
                     systemBinaries.stream()
                             .map(this::resolveSystemBinary)
                             .map(Path::toFile)
-                            .toList()
+                            .collect(Collectors.toList())
             );
         }
     }
 
     private void symlinkToPathDir(final List<File> binaries) {
-        List<File> directoryRuns = binaries.stream().filter(File::isDirectory).toList();
+        List<File> directoryRuns = binaries.stream().filter(File::isDirectory).collect(Collectors.toList());
         if (!directoryRuns.isEmpty()) {
             throw new GradleException("Configured `runs` need to be files but these are directories instead: " + directoryRuns);
         }
-        List<File> nonExistentRuns = binaries.stream().filter(each -> !each.exists()).toList();
+        List<File> nonExistentRuns = binaries.stream().filter(each -> !each.exists()).collect(Collectors.toList());
         if (!nonExistentRuns.isEmpty()) {
             throw new GradleException("Configured `runs` don't exist: " + nonExistentRuns);
         }
