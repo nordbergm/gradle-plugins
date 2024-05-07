@@ -31,10 +31,7 @@ class PrefixingOutputStreamTest {
     @Test
     void testPrefix() throws IOException {
         final ByteArrayOutputStream delegate = new ByteArrayOutputStream();
-        new PrefixingOutputStream("[test] ", delegate).write("""
-                This is a test
-                To show that\r
-                each line is prefixed.""".getBytes(StandardCharsets.UTF_8)
+        new PrefixingOutputStream("[test] ", delegate).write("This is a test\nTo show that\r\neach line is prefixed.".getBytes(StandardCharsets.UTF_8)
         );
 
         assertEquals("[test] This is a test\n" +

@@ -25,9 +25,21 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-public record GradleTestkitHelper(Path projectDir) {
+public final class GradleTestkitHelper {
+
+    private final Path projectDir;
+
+    public GradleTestkitHelper(Path projectDir) {
+        this.projectDir = projectDir;
+    }
+
+    public Path getProjectDir() {
+        return projectDir;
+    }
 
     public void settings(String content) {
         writeFile(projectDir.resolve("settings.gradle.kts"), content);
@@ -62,7 +74,7 @@ public record GradleTestkitHelper(Path projectDir) {
         final Path relativePath = projectDir.relativize(path);
         System.out.println(relativePath);
         System.out.println("-".repeat(relativePath.toString().length()));
-        final List<String> lines = content.lines().toList();
+        final List<String> lines = content.lines().collect(Collectors.toList());
         for (int i = 1; i <= lines.size(); i++) {
             System.out.println(String.format("%1$2s:", i) + lines.get(i - 1));
         }

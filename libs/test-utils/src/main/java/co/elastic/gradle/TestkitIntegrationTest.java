@@ -46,7 +46,7 @@ public class TestkitIntegrationTest {
 
     protected GradleTestkitHelper getHelper(Path testProjectDir) throws IOException {
         GradleTestkitHelper helper = new GradleTestkitHelper(testProjectDir);
-        Files.createDirectories(helper.projectDir());
+        Files.createDirectories(helper.getProjectDir());
         return helper;
     }
 
